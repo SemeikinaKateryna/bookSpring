@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Books Page</title>
+
+    <link th:rel="stylesheet"
+          type="text/css"
+          th:href="@{/webjars/bootstrap/5.2.3/css/bootsrap.min.css}">
+
+    <script th:src="@{/webjars/jquery/3.6.3/jquery.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/5.2.3/js/bootstrap.min.js}"></script>
+</head>
+<body>
+<h1>Add book:</h1>
+    <form action="add_book" method="post">
+        <label for="bookTitle">Title</label>
+        <input type="text" name="title" id="bookTitle">
+        <label for="bookAuthor">Author</label>
+        <input type="text" name="author" id="bookAuthor">
+        <label for="bookPages">Pages</label>
+        <input type="number" name="pages" id="bookPages">
+        <label for="bookLibrary">Library</label>
+        <input type="number" name="library" id="bookLibrary">
+        <input type="submit" value="Add">
+    </form>
+
+    <h1>All books:</h1>
+    <table id="books" class="table table-primary table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Pages</th>
+                <th>Library</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="book: ${books}">
+                <td th:text="${book.id}"/>
+                <td th:text="${book.title}"/>
+                <td th:text="${book.author}"/>
+                <td th:text="${book.numberOfPages}"/>
+                <td> <a th:href="@{/book_library/{id}(id=${book.library.id})}"> library </a></td>
+            </tr>
+        </tbody>
+    </table>
+
+
+</body>
+</html>
