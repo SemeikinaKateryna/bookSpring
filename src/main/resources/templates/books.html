@@ -30,7 +30,8 @@
                 <th>Title</th>
                 <th>Author</th>
                 <th>Pages</th>
-                <th>Library</th>
+                <th></th>
+                <th></th>
                 <th></th>
             </tr>
         </thead>
@@ -41,7 +42,8 @@
                 <td th:text="${book.author}"/>
                 <td th:text="${book.numberOfPages}"/>
                 <td> <a th:href="@{/book_library/{id}(id=${book.library.id})}"> library </a></td>
-                <td> <a th:href="@{/edit_book(id=${book.id})}"> Edit </a> </td>
+                <td> <a th:href="@{/edit_book(id=${book.id})}" class="btn btn-success"> Edit </a> </td>
+                <td> <a th:href="@{/delete_book(id=${book.id})}" class="btn btn-danger">Delete </a></td>
             </tr>
         </tbody>
     </table>

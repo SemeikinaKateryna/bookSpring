@@ -63,6 +63,34 @@ public class BookController {
 
     @GetMapping("/edit_book")
     public String editBook(@RequestParam int id, Model model){
+        Optional<Book> bookFinded = bookRepository.findById(id);
+        if(bookFinded.isEmpty()){
+            return "redirect:/books";
+        }
+        model.addAttribute("book",bookFinded.get());
+        return "edit_book";
+    }
 
+    @PostMapping("/update_book")
+    public String updateBook(@RequestParam("id") int id, @RequestParam("title") String title,
+                             @RequestParam("author") String author, @RequestParam("pages") int pages,
+                             @RequestParam("library") int library){
+        Optional<Book> bookFinded = bookRepository.findById(id);
+        if(bookFinded.isEmpty()){
+            return "redirect:/books";
+        }
+        Book book = bookFinded.get();
+        book.setTitle(title);
+        book.setAuthor(author);
+        book.setNumberOfPages(pages);
+        book.setLibrary(libraryRepository.findById(library).get());
+        bookRepository.save(book);
+        return "redirect:/books";
+    }
+
+    @GetMapping("/delete_book")
+    public String deleteBook(@RequestParam("id")int id){
+        bookRepository.deleteById(id);
+        return "redirect:/books";
     }
 }
