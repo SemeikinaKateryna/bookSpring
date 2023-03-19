@@ -7,10 +7,7 @@ import com.example.bookspring.repository.LibraryRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +15,6 @@ import java.util.Optional;
 @Controller
 @AllArgsConstructor
 public class BookController {
-
     BookRepository bookRepository;
     LibraryRepository libraryRepository;
     @GetMapping("/books")
@@ -53,5 +49,20 @@ public class BookController {
         }
         model.addAttribute("library", libraryFinded.get());
         return "library_by_book";
+    }
+
+    @GetMapping("/search")
+    public String searchByTitle (@RequestParam String title, Model model){
+        List<Book> booksFinded = bookRepository.findBooksByTitleOrderByAuthorAsc(title);
+        if(booksFinded.isEmpty()){
+            return "redirect:/books";
+        }
+        model.addAttribute("books", booksFinded);
+        return "books_by_title";
+    }
+
+    @GetMapping("/edit_book")
+    public String editBook(@RequestParam int id, Model model){
+
     }
 }
