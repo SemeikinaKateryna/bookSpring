@@ -3,14 +3,10 @@ package com.example.bookspring.entity;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 @Getter
 @Setter
-public class Library {
+public class Author {
     private Integer id;
-
-    private String address;
-
+    private String fullName;
+    private String country;
 }

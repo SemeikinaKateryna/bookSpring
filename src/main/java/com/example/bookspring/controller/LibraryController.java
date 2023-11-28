@@ -1,7 +1,7 @@
 //package com.example.bookspring.controller;
 //
 //import com.example.bookspring.entity.Library;
-//import com.example.bookspring.mysql.LibraryDao;
+//import com.example.bookspring.mysql.daos.MySqlLibraryDao;
 //import lombok.AllArgsConstructor;
 //import org.springframework.stereotype.Controller;
 //import org.springframework.ui.Model;
@@ -13,7 +13,7 @@
 //@Controller
 //@AllArgsConstructor
 //public class LibraryController {
-//    LibraryDao libraryRepository;
+//    MySqlLibraryDao libraryRepository;
 //
 //    @GetMapping("/libraries")
 //    public String libraries(Model model){

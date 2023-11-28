@@ -2,27 +2,14 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Books Page</title>
+    <title>Search books by title</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
 
 </head>
 <body>
 <div data-th-include="navbar.html"></div>
 <div class="container mt-5">
-<h1 class="caption">Add book:</h1>
-    <form action="/add_book" method="post" class="form-text">
-        <label for="bookTitle">Title</label>
-        <input type="text" name="title" id="bookTitle">
-        <label for="bookAuthor">Author</label>
-        <input type="text" name="author" id="bookAuthor">
-        <label for="bookPages">Pages</label>
-        <input type="number" name="pages" id="bookPages">
-        <label for="bookLibrary">Library</label>
-        <input type="number" name="library" id="bookLibrary">
-        <input type="submit" value="Add" class="btn btn-success">
-    </form>
-
-    <h1 class="caption">All books:</h1>
+    <h1 class="caption">Founded books by title: <span th:text="| ${parameter}|"></span> </h1>
     <table id="books" class="table table-success table-striped table-hover">
         <thead class="table table-dark">
             <tr>
@@ -37,7 +24,7 @@
             </tr>
         </thead>
         <tbody>
-        <tr th:each="book: ${books}">
+        <tr th:each="book: ${booksFounded}">
                 <td th:text="${book.getId()}"/>
                 <td th:text="${book.getTitle()}"/>
                 <td>
