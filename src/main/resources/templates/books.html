@@ -13,12 +13,31 @@
     <form action="/add_book" method="post" class="form-text">
         <label for="bookTitle">Title</label>
         <input type="text" name="title" id="bookTitle">
-        <label for="bookAuthor">Author</label>
-        <input type="text" name="author" id="bookAuthor">
+
+        <label for="bookAuthor">Author
+            <select class="form-select" id="bookAuthor" name="author">
+                <option selected disabled value="">No author</option>
+                <option th:each="a:${authors}" th:value="${a.id}"
+                        th:text="${a.fullName}">
+                </option>
+            </select>
+        </label>
+
         <label for="bookPages">Pages</label>
         <input type="number" name="pages" id="bookPages">
-        <label for="bookLibrary">Library</label>
-        <input type="number" name="library" id="bookLibrary">
+
+        <label for="bookYear">Year</label>
+        <input type="number" name="year" id="bookYear">
+
+        <label for="bookLibrary">Library
+            <select class="form-select" id="bookLibrary" name="library">
+                <option selected disabled value="">No library</option>
+                <option th:each="lib:${libraries}" th:value="${lib.id}"
+                        th:text="${lib.address}">
+                </option>
+            </select>
+        </label>
+
         <input type="submit" value="Add" class="btn btn-success">
     </form>
 

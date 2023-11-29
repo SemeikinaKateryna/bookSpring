@@ -17,7 +17,6 @@ import java.util.List;
 @Repository
 public class MySqlLibraryDao implements ResultSetExtractor<Library> {
 
-
     public Library findById(int id) {
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement
@@ -47,6 +46,8 @@ public class MySqlLibraryDao implements ResultSetExtractor<Library> {
         }
         return libraries;
     }
+
+
     @Override
     public Library extractFromResultSet(ResultSet resultSet) throws SQLException {
         Library library = new Library();
@@ -56,4 +57,29 @@ public class MySqlLibraryDao implements ResultSetExtractor<Library> {
     }
 
 
+    public boolean insert(Library library) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement
+                     (MySQLQuery.LibraryRequestsSQL.INSERT_LIBRARY)) {
+            statement.setString(1, library.getAddress());
+            statement.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean delete(int id) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement
+                     (MySQLQuery.LibraryRequestsSQL.DELETE_LIBRARY)) {
+            statement.setInt(1, id);
+            statement.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

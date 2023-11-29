@@ -22,14 +22,18 @@
             <tr>
                 <th>#</th>
                 <th>Address</th>
-                <th>Books</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
             <tr th:each="library: ${libraries}">
                 <td th:text="${library.id}"></td>
                 <td th:text="${library.address}"></td>
-                <td> <a th:href="@{/library_books/{id}(id=${library.id})}"> books </a> </td>
+                <td>
+                    <a th:href="@{/delete_library(id=${library.id})}" class="btn btn-danger">
+                        Delete
+                    </a>
+                </td>
             </tr>
         </tbody>
     </table>

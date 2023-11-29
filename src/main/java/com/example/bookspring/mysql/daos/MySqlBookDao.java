@@ -1,6 +1,7 @@
 package com.example.bookspring.mysql.daos;
 
 import com.example.bookspring.dao.IDao;
+import com.example.bookspring.entity.Author;
 import com.example.bookspring.entity.Book;
 import com.example.bookspring.mysql.DatabaseConnection;
 import com.example.bookspring.mysql.queries.MySQLQuery;
@@ -118,14 +119,31 @@ public class MySqlBookDao implements IDao<Book>, ResultSetExtractor<Book>{
     }
 
     @Override
+    public Book findLast() {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement
+                     (MySQLQuery.BookRequestsSQL.FIND_LAST)) {
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return extractFromResultSet(resultSet);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public Book extractFromResultSet(ResultSet resultSet) throws SQLException {
-        Book book = new Book();
-        book.setId(resultSet.getInt("id"));
-        book.setLibrary(libraryDao.findById(resultSet.getInt("library_id")));
-        book.setTitle(resultSet.getString("title"));
-        book.setPages(resultSet.getInt("pages"));
-        book.setYear(resultSet.getInt("year"));
-        book.setAuthor(authorDao.findByBookId(resultSet.getInt("id")));
+        Book book = new Book.Builder(resultSet.getInt("id"))
+                .addTitle(resultSet.getString("title"))
+                .addLibrary(libraryDao.findById(resultSet.getInt("library_id")))
+                .addPages(resultSet.getInt("pages"))
+                .addYear(resultSet.getInt("year")).build();
+        List<Author> authors = authorDao.findByBookId(resultSet.getInt("id"));
+        for (Author a: authors) {
+            book.Builder.addAuthor(a);
+        }
         return book;
     }
 }

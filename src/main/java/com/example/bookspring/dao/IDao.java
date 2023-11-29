@@ -1,5 +1,6 @@
 package com.example.bookspring.dao;
 
+import com.example.bookspring.entity.Book;
 import com.example.bookspring.mysql.daos.Searchable;
 
 import java.util.List;
@@ -10,4 +11,6 @@ public interface IDao<T> extends Searchable<T> {
     boolean insert(T object);
     boolean update(T object);
     boolean delete(int id);
+
+    Book findLast();
 }
