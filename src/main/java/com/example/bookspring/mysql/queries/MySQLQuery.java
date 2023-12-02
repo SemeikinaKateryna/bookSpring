@@ -36,13 +36,8 @@ public abstract class MySQLQuery {
     }
 
     public static class BookAuthorRequestsSQL{
-        public static final String FIND_BY_BOOK_ID = "SELECT * FROM Book_Author WHERE book_id = ?";
-        public static final String FIND_BY_AUTHOR_ID = "SELECT * FROM Book_Author WHERE author_id = ?";
-        public static final String SELECT_ALL_BOOK_AUTHOR = "SELECT * FROM Book_Author";
         public static final String INSERT_BOOK_AUTHOR = "INSERT INTO Book_Author (book_id, author_id) " +
                 "VALUES (?, ?) ";
-        public static final String UPDATE_BOOK_AUTHOR_BY_BOOK_ID = "UPDATE Book_Author SET author_id = ? " +
-                "WHERE book_id = ?";
         public static final String DELETE_BY_BOOK_AUTHOR_ID = "DELETE FROM Book_Author WHERE book_id = ? AND author_id = ?";
     }
 }
