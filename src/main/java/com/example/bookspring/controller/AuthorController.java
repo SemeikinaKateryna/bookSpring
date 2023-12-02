@@ -1,8 +1,6 @@
 package com.example.bookspring.controller;
 
 import com.example.bookspring.entity.Author;
-import com.example.bookspring.entity.Book;
-import com.example.bookspring.entity.Library;
 import com.example.bookspring.mysql.daos.MySqlAuthorDao;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,9 +29,10 @@ public class AuthorController {
     @PostMapping("/add_author")
     public String addAuthor(@RequestParam("fullName") String fullName,
                           @RequestParam("country") String country) {
-        Author author = new Author();
-        author.setFullName(fullName);
-        author.setCountry(country);
+        Author author = new Author.Builder()
+                .addFullName(fullName)
+                .addCountry(country)
+                .build();
         authorRepository.insert(author);
 
         return "redirect:/authors";

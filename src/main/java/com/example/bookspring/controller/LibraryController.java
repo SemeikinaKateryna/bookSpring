@@ -8,7 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @AllArgsConstructor
@@ -24,8 +23,9 @@ public class LibraryController {
 
     @PostMapping("/add_library")
     public String addLibrary(@RequestParam("address") String address){
-        Library library = new Library();
-        library.setAddress(address);
+        Library library = new Library.Builder()
+                .addAddress(address)
+                .build();
         libraryRepository.insert(library);
         return "redirect:/libraries";
     }

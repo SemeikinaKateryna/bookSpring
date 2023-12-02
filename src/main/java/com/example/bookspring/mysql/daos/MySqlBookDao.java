@@ -1,6 +1,6 @@
 package com.example.bookspring.mysql.daos;
 
-import com.example.bookspring.dao.IDao;
+import com.example.bookspring.dao.interfaces.IBookDao;
 import com.example.bookspring.entity.Author;
 import com.example.bookspring.entity.Book;
 import com.example.bookspring.mysql.DatabaseConnection;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class MySqlBookDao implements IDao<Book>, ResultSetExtractor<Book>{
+public class MySqlBookDao implements IBookDao, ResultSetExtractor<Book>{
     private final MySqlLibraryDao libraryDao = new MySqlLibraryDao();
     private final MySqlAuthorDao authorDao = new MySqlAuthorDao();
 
@@ -52,11 +52,14 @@ public class MySqlBookDao implements IDao<Book>, ResultSetExtractor<Book>{
 
     @Override
     public List<Book> findAllByTitle(String param) {
+        String parameter = "%";
+        String parameterParam = parameter.concat(param);
+        String parameterFinal = parameterParam.concat("%");
         List<Book> books = new ArrayList<>();
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement
                      (MySQLQuery.BookRequestsSQL.FIND_BOOKS_BY_TITLE)) {
-            statement.setString(1, param);
+            statement.setString(1, parameterFinal);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 Book book = extractFromResultSet(resultSet);
@@ -135,15 +138,13 @@ public class MySqlBookDao implements IDao<Book>, ResultSetExtractor<Book>{
 
     @Override
     public Book extractFromResultSet(ResultSet resultSet) throws SQLException {
-        Book book = new Book.Builder(resultSet.getInt("id"))
+        List<Author> authors = authorDao.findByBookId(resultSet.getInt("id"));
+        return new Book.Builder(resultSet.getInt("id"))
                 .addTitle(resultSet.getString("title"))
                 .addLibrary(libraryDao.findById(resultSet.getInt("library_id")))
                 .addPages(resultSet.getInt("pages"))
-                .addYear(resultSet.getInt("year")).build();
-        List<Author> authors = authorDao.findByBookId(resultSet.getInt("id"));
-        for (Author a: authors) {
-            book.Builder.addAuthor(a);
-        }
-        return book;
+                .addYear(resultSet.getInt("year"))
+                .addAuthors(authors)
+                .build();
     }
 }

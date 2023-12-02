@@ -23,7 +23,7 @@ public class Book {
 
     // Внутрішній статичний клас Builder
     public static class Builder {
-        private Book book;
+        private final Book book;
 
         public Builder() {
             book = new Book();
@@ -56,6 +56,10 @@ public class Book {
 
         public Builder addAuthor(Author author) {
             book.getAuthor().add(author);
+            return this;
+        }
+        public Builder addAuthors(List<Author> authors) {
+            book.setAuthor(authors);
             return this;
         }
 

@@ -1,6 +1,6 @@
 package com.example.bookspring.mysql.daos;
 
-import com.example.bookspring.entity.Book;
+import com.example.bookspring.dao.interfaces.ILibraryDao;
 import com.example.bookspring.entity.Library;
 import com.example.bookspring.mysql.DatabaseConnection;
 import com.example.bookspring.mysql.queries.MySQLQuery;
@@ -15,8 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class MySqlLibraryDao implements ResultSetExtractor<Library> {
+public class MySqlLibraryDao implements ILibraryDao, ResultSetExtractor<Library> {
 
+    @Override
     public Library findById(int id) {
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement
@@ -31,6 +32,8 @@ public class MySqlLibraryDao implements ResultSetExtractor<Library> {
         }
         return null;
     }
+
+    @Override
     public List<Library> findAll() {
         List<Library> libraries = new ArrayList<>();
         try (Connection connection = DatabaseConnection.getConnection();
@@ -50,13 +53,13 @@ public class MySqlLibraryDao implements ResultSetExtractor<Library> {
 
     @Override
     public Library extractFromResultSet(ResultSet resultSet) throws SQLException {
-        Library library = new Library();
-        library.setId(resultSet.getInt("id"));
-        library.setAddress(resultSet.getString("address"));
-        return library;
+        return new Library.Builder(resultSet.getInt("id"))
+                        .addAddress(resultSet.getString("address"))
+                        .build();
     }
 
 
+    @Override
     public boolean insert(Library library) {
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement
@@ -70,6 +73,7 @@ public class MySqlLibraryDao implements ResultSetExtractor<Library> {
         }
     }
 
+    @Override
     public boolean delete(int id) {
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement

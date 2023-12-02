@@ -1,5 +1,6 @@
 package com.example.bookspring.mysql.daos;
 
+import com.example.bookspring.dao.interfaces.IAuthorDao;
 import com.example.bookspring.entity.Author;
 import com.example.bookspring.mysql.DatabaseConnection;
 import com.example.bookspring.mysql.queries.MySQLQuery;
@@ -12,7 +13,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MySqlAuthorDao implements ResultSetExtractor<Author>{
+public class MySqlAuthorDao implements IAuthorDao, ResultSetExtractor<Author>{
+    @Override
     public List<Author> findByBookId(int bookId) {
         List<Author> authors = new ArrayList<>();
         try (Connection connection = DatabaseConnection.getConnection();
@@ -29,7 +31,7 @@ public class MySqlAuthorDao implements ResultSetExtractor<Author>{
         }
         return authors;
     }
-
+    @Override
     public Author findById(int id) {
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement
@@ -45,6 +47,7 @@ public class MySqlAuthorDao implements ResultSetExtractor<Author>{
         return null;
     }
 
+    @Override
     public List<Author> findAll() {
         List<Author> authors = new ArrayList<>();
         try (Connection connection = DatabaseConnection.getConnection();
@@ -60,7 +63,7 @@ public class MySqlAuthorDao implements ResultSetExtractor<Author>{
         }
         return authors;
     }
-
+    @Override
     public boolean update(Author author) {
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement
@@ -76,7 +79,7 @@ public class MySqlAuthorDao implements ResultSetExtractor<Author>{
             return false;
         }
     }
-
+    @Override
     public boolean deleteAuthorFromBook (int bookId, int authorId) {
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement
@@ -91,7 +94,7 @@ public class MySqlAuthorDao implements ResultSetExtractor<Author>{
             return false;
         }
     }
-
+    @Override
     public boolean addAuthorToBook(int bookId, int authorId){
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement
@@ -106,7 +109,7 @@ public class MySqlAuthorDao implements ResultSetExtractor<Author>{
             return false;
         }
     }
-
+    @Override
     public boolean insert(Author object) {
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement
@@ -120,7 +123,7 @@ public class MySqlAuthorDao implements ResultSetExtractor<Author>{
             return false;
         }
     }
-
+    @Override
     public boolean delete(int id) {
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement
@@ -137,13 +140,11 @@ public class MySqlAuthorDao implements ResultSetExtractor<Author>{
 
     @Override
     public Author extractFromResultSet(ResultSet resultSet) throws SQLException {
-        Author author = new Author();
-        author.setId(resultSet.getInt("id"));
-        author.setFullName(resultSet.getString("full_name"));
-        author.setCountry(resultSet.getString("country"));
-        return author;
+        return new Author.Builder(resultSet.getInt("id"))
+                .addFullName(resultSet.getString("full_name"))
+                .addCountry(resultSet.getString("country"))
+                .build();
+
     }
-
-
 
 }

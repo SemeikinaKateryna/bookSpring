@@ -1,13 +1,12 @@
 package com.example.bookspring.controller;
 
-import com.example.bookspring.dao.DaoFactory;
-import com.example.bookspring.dao.IDao;
-import com.example.bookspring.dao.TypeDao;
+import com.example.bookspring.dao.*;
+import com.example.bookspring.dao.interfaces.IAuthorDao;
+import com.example.bookspring.dao.interfaces.IBookDao;
+import com.example.bookspring.dao.interfaces.ILibraryDao;
 import com.example.bookspring.entity.Author;
 import com.example.bookspring.entity.Book;
 import com.example.bookspring.entity.Library;
-import com.example.bookspring.mysql.daos.MySqlAuthorDao;
-import com.example.bookspring.mysql.daos.MySqlLibraryDao;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,15 +16,16 @@ import java.util.Optional;
 
 @Controller
 public class BookController {
-    IDao<Book> bookRepository;
-    MySqlLibraryDao libraryRepository;
-
-    MySqlAuthorDao authorRepository;
+    IFabric fabric;
+    IBookDao bookRepository;
+    ILibraryDao libraryRepository;
+    IAuthorDao authorRepository;
 
     public BookController() {
-        this.bookRepository = DaoFactory.getDAOInstance(TypeDao.MY_SQL);
-        this.libraryRepository = new MySqlLibraryDao();
-        this.authorRepository = new MySqlAuthorDao();
+        fabric = DaoFactory.getDAOInstance(TypeDao.MY_SQL);
+        bookRepository = fabric.createBook();
+        libraryRepository = fabric.createLibrary();
+        authorRepository = fabric.createAuthor();
     }
 
     @GetMapping("/books")
@@ -58,6 +58,7 @@ public class BookController {
                         .build();
 
                 bookRepository.insert(book);
+                authorRepository.addAuthorToBook(bookRepository.findLast().getId(), author);
                 return "redirect:/books";
             }
             return "redirect:/books";
@@ -108,16 +109,10 @@ public class BookController {
         return "redirect:/books";
     }
 
-    public List<Book> searchByName(String param){
-        String parameter = "%";
-        String parameterParam = parameter.concat(param);
-        String parameterFinal = parameterParam.concat("%");
-        return bookRepository.findAllByTitle(parameterFinal);
-    }
 
     @GetMapping("/search")
     public String search(@RequestParam("param") String param, Model model){
-        List<Book> booksFounded = searchByName(param);
+        List<Book> booksFounded = bookRepository.findAllByTitle(param);
         model.addAttribute("parameter", param);
         if(!booksFounded.isEmpty()){
             model.addAttribute("booksFounded", booksFounded);
@@ -133,35 +128,6 @@ public class BookController {
         return "redirect:/books";
     }
 
-
-
-//    @GetMapping("/edit_book_author")
-//    public String editBookAuthor(@RequestParam("id") int authorId, Model model){
-//        Optional<Author> authorFound = Optional.ofNullable(authorRepository.findById(authorId));
-//        if(authorFound.isEmpty()){
-//            return "redirect:/books";
-//        }
-//        model.addAttribute("author",authorFound.get());
-//        List<Book> books = bookRepository.findAll();
-//        model.addAttribute("books", books);
-//        return "/edit_author";
-//
-//    }
-//
-//    @PostMapping("/update_book_author")
-//    public String updateBookAuthor(@RequestParam("id") int id,
-//                               @RequestParam("fullName") String fullName,
-//                               @RequestParam("country") String country){
-//        Optional<Author> authorFound = Optional.ofNullable(authorRepository.findById(id));
-//        if(authorFound.isEmpty()){
-//            return "redirect:/books";
-//        }
-//        Author author = authorFound.get();
-//        author.setFullName(fullName);
-//        author.setCountry(country);
-//        authorRepository.update(author);
-//        return "redirect:/books";
-//    }
 
     @GetMapping("/delete_from_book_author")
     public String deleteFromBookAuthor(@RequestParam("authorId") int authorId,
