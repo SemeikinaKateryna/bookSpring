@@ -55,10 +55,10 @@ public class MySqlBookDao implements IBookDao, ResultSetExtractor<Book>{
         String parameter = "%";
         String parameterParam = parameter.concat(param);
         String parameterFinal = parameterParam.concat("%");
+
         List<Book> books = new ArrayList<>();
         try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement
-                     (MySQLQuery.BookRequestsSQL.FIND_BOOKS_BY_TITLE)) {
+             CallableStatement statement = connection.prepareCall("{call getBookByTitle(?)}")) {
             statement.setString(1, parameterFinal);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
