@@ -1,7 +1,10 @@
 package com.example.bookspring.controller;
 
+import com.example.bookspring.dao.interfaces.IAuthorDao;
 import com.example.bookspring.entity.Author;
 import com.example.bookspring.mysql.daos.MySqlAuthorDao;
+import com.example.bookspring.observer.display.LoggingDisplayAuthor;
+import com.example.bookspring.observer.Observer;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,10 +16,14 @@ import java.util.Optional;
 
 @Controller
 public class AuthorController {
-    MySqlAuthorDao authorRepository;
+    IAuthorDao authorRepository;
+    Observer<Author> observer;
+
 
     public AuthorController() {
         this.authorRepository = new MySqlAuthorDao();
+        this.observer = new LoggingDisplayAuthor();
+        authorRepository.registerObserver(observer);
     }
 
     @GetMapping("/authors")

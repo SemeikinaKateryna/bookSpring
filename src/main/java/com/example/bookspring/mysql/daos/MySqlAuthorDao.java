@@ -12,8 +12,38 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import com.example.bookspring.observer.*;
 
-public class MySqlAuthorDao implements IAuthorDao, ResultSetExtractor<Author>{
+public class MySqlAuthorDao implements IAuthorDao, ResultSetExtractor<Author> {
+    private Author author;
+    private final List<Observer<Author>> observers = new ArrayList<>();
+
+    public void registerObserver(Observer o) {
+        this.observers.add(o);
+    }
+
+    public void removeObserver(Observer o) {
+        this.observers.remove(o);
+    }
+
+    public void notifyObserversUpdate() {
+        for (Observer<Author> observer : this.observers) {
+            observer.update(author);
+        }
+    }
+
+    public void notifyObserversInsert() {
+        for (Observer<Author> observer : this.observers) {
+            observer.insert(author);
+        }
+    }
+
+    public void notifyObserversDelete() {
+        for (Observer<Author> observer : this.observers) {
+            observer.delete(author);
+        }
+    }
+
     @Override
     public List<Author> findByBookId(int bookId) {
         List<Author> authors = new ArrayList<>();
@@ -73,6 +103,10 @@ public class MySqlAuthorDao implements IAuthorDao, ResultSetExtractor<Author>{
 
             statement.setInt(3, author.getId());
             statement.executeUpdate();
+
+            this.author = author;
+            notifyObserversUpdate();
+
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -117,6 +151,10 @@ public class MySqlAuthorDao implements IAuthorDao, ResultSetExtractor<Author>{
             statement.setString(1, object.getFullName());
             statement.setString(2, object.getCountry());
             statement.executeUpdate();
+
+            this.author = object;
+
+            notifyObserversInsert();
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -125,11 +163,15 @@ public class MySqlAuthorDao implements IAuthorDao, ResultSetExtractor<Author>{
     }
     @Override
     public boolean delete(int id) {
+        this.author = findById(id);
+
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement
                      (MySQLQuery.AuthorRequestsSQL.DELETE_AUTHOR)) {
             statement.setInt(1, id);
             statement.executeUpdate();
+
+            notifyObserversDelete();
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -146,5 +188,4 @@ public class MySqlAuthorDao implements IAuthorDao, ResultSetExtractor<Author>{
                 .build();
 
     }
-
 }

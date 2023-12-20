@@ -1,10 +1,12 @@
 package com.example.bookspring.mysql.daos;
 
 import com.example.bookspring.dao.interfaces.ILibraryDao;
+import com.example.bookspring.entity.Author;
 import com.example.bookspring.entity.Library;
 import com.example.bookspring.mysql.DatabaseConnection;
 import com.example.bookspring.mysql.queries.MySQLQuery;
 import com.example.bookspring.mysql.queries.ResultSetExtractor;
+import com.example.bookspring.observer.Observer;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;

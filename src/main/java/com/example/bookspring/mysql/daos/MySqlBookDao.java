@@ -6,6 +6,7 @@ import com.example.bookspring.entity.Book;
 import com.example.bookspring.mysql.DatabaseConnection;
 import com.example.bookspring.mysql.queries.MySQLQuery;
 import com.example.bookspring.mysql.queries.ResultSetExtractor;
+import com.example.bookspring.observer.Observer;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -13,9 +14,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class MySqlBookDao implements IBookDao, ResultSetExtractor<Book>{
+public class MySqlBookDao implements IBookDao, ResultSetExtractor<Book> {
+    private Book book;
+    private final List<Observer<Book>> observers = new ArrayList<>();
     private final MySqlLibraryDao libraryDao = new MySqlLibraryDao();
     private final MySqlAuthorDao authorDao = new MySqlAuthorDao();
+
+    public void registerObserver(Observer o) {
+        this.observers.add(o);
+    }
+
+    public void removeObserver(Observer o) {
+        this.observers.remove(o);
+    }
+
+    public void notifyObserversUpdate() {
+        for (Observer<Book> observer : this.observers) {
+            observer.update(book);
+        }
+    }
+
+    public void notifyObserversInsert() {
+        for (Observer<Book> observer : this.observers) {
+            observer.insert(book);
+        }
+    }
+
+    public void notifyObserversDelete() {
+        for (Observer<Book> observer : this.observers) {
+            observer.delete(book);
+        }
+    }
 
     @Override
     public Book findById(int id) {
@@ -81,6 +110,9 @@ public class MySqlBookDao implements IBookDao, ResultSetExtractor<Book>{
             statement.setInt(3, object.getPages());
             statement.setInt(4, object.getYear());
             statement.executeUpdate();
+
+            this.book = object;
+            notifyObserversInsert();
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -100,6 +132,10 @@ public class MySqlBookDao implements IBookDao, ResultSetExtractor<Book>{
 
             statement.setInt(5, object.getId());
             statement.executeUpdate();
+
+            this.book = object;
+            notifyObserversUpdate();
+
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -109,11 +145,13 @@ public class MySqlBookDao implements IBookDao, ResultSetExtractor<Book>{
 
     @Override
     public boolean delete(int id) {
+        this.book = findById(id);
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement
                      (MySQLQuery.BookRequestsSQL.DELETE_BOOK)) {
             statement.setInt(1, id);
             statement.executeUpdate();
+            notifyObserversDelete();
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -147,4 +185,5 @@ public class MySqlBookDao implements IBookDao, ResultSetExtractor<Book>{
                 .addAuthors(authors)
                 .build();
     }
+
 }

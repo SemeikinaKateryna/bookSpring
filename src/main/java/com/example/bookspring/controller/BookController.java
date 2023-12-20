@@ -7,6 +7,8 @@ import com.example.bookspring.dao.interfaces.ILibraryDao;
 import com.example.bookspring.entity.Author;
 import com.example.bookspring.entity.Book;
 import com.example.bookspring.entity.Library;
+import com.example.bookspring.observer.Observer;
+import com.example.bookspring.observer.display.LoggingDisplayBook;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,12 +22,15 @@ public class BookController {
     IBookDao bookRepository;
     ILibraryDao libraryRepository;
     IAuthorDao authorRepository;
+    Observer<Book> observer;
 
     public BookController() {
         fabric = DaoFactory.getDAOInstance(TypeDao.MY_SQL);
         bookRepository = fabric.createBook();
         libraryRepository = fabric.createLibrary();
         authorRepository = fabric.createAuthor();
+        this.observer = new LoggingDisplayBook();
+        bookRepository.registerObserver(observer);
     }
 
     @GetMapping("/books")
