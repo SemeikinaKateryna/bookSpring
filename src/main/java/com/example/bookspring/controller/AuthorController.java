@@ -2,6 +2,7 @@ package com.example.bookspring.controller;
 
 import com.example.bookspring.dao.interfaces.IAuthorDao;
 import com.example.bookspring.entity.Author;
+import com.example.bookspring.memento.Caretaker;
 import com.example.bookspring.mysql.daos.MySqlAuthorDao;
 import com.example.bookspring.observer.display.LoggingDisplayAuthor;
 import com.example.bookspring.observer.Observer;
@@ -18,12 +19,14 @@ import java.util.Optional;
 public class AuthorController {
     IAuthorDao authorRepository;
     Observer<Author> observer;
-
+    Caretaker caretaker;
+    boolean flag = false;
 
     public AuthorController() {
         this.authorRepository = new MySqlAuthorDao();
         this.observer = new LoggingDisplayAuthor();
-        authorRepository.registerObserver(observer);
+        this.authorRepository.registerObserver(observer);
+        this.caretaker = new Caretaker();
     }
 
     @GetMapping("/authors")
@@ -57,6 +60,10 @@ public class AuthorController {
         if(authorFound.isEmpty()){
             return "redirect:/authors";
         }
+        if(!flag) {
+            this.caretaker.write(authorFound.get());
+            flag = true;
+        }
         model.addAttribute("author",authorFound.get());
         return "edit_author";
     }
@@ -73,6 +80,22 @@ public class AuthorController {
         author.setFullName(fullName);
         author.setCountry(country);
         authorRepository.update(author);
+        caretaker.write(author);
+        return "redirect:/authors";
+    }
+
+    @GetMapping("/previous_author")
+    public String getPreviousAuthor(@RequestParam int id) {
+        Optional<Author> authorFound = Optional.ofNullable(authorRepository.findById(id));
+        if(authorFound.isEmpty()){
+            return "redirect:/authors";
+        }
+        caretaker.undo();
+        Author newAuthor = caretaker.getAuthorOriginator().getAuthor();
+        if (newAuthor == null) {
+                return "redirect:/authors";
+        }
+        authorRepository.update(newAuthor);
         return "redirect:/authors";
     }
 }
