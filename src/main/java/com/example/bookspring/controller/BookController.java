@@ -7,8 +7,12 @@ import com.example.bookspring.dao.interfaces.ILibraryDao;
 import com.example.bookspring.entity.Author;
 import com.example.bookspring.entity.Book;
 import com.example.bookspring.entity.Library;
+import com.example.bookspring.proxy.AuthorDaoProxy;
+import com.example.bookspring.proxy.BookDaoProxy;
 import com.example.bookspring.observer.Observer;
 import com.example.bookspring.observer.display.LoggingDisplayBook;
+import com.example.bookspring.proxy.LibraryDaoProxy;
+import com.example.bookspring.proxy.interfaceProxy.FindAll;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,23 +27,29 @@ public class BookController {
     ILibraryDao libraryRepository;
     IAuthorDao authorRepository;
     Observer<Book> observer;
+    FindAll<Book> bookRepositoryProxy;
+    FindAll<Author> authorRepositoryProxy;
+    FindAll<Library> libraryRepositoryProxy;
 
     public BookController() {
         fabric = DaoFactory.getDAOInstance(TypeDao.MY_SQL);
         bookRepository = fabric.createBook();
         libraryRepository = fabric.createLibrary();
         authorRepository = fabric.createAuthor();
-        this.observer = new LoggingDisplayBook();
+        observer = new LoggingDisplayBook();
         bookRepository.registerObserver(observer);
+        bookRepositoryProxy = new BookDaoProxy();
+        authorRepositoryProxy = new AuthorDaoProxy();
+        libraryRepositoryProxy = new LibraryDaoProxy();
     }
 
     @GetMapping("/books")
     public String books(Model model){
-        List<Book> allBooks = bookRepository.findAll();
+        List<Book> allBooks = bookRepositoryProxy.findAll();
         model.addAttribute("books",allBooks);
-        List<Author> authors = authorRepository.findAll();
+        List<Author> authors = authorRepositoryProxy.findAll();
         model.addAttribute("authors", authors);
-        List<Library> libraries = libraryRepository.findAll();
+        List<Library> libraries = libraryRepositoryProxy.findAll();
         model.addAttribute("libraries", libraries);
         return "books";
     }
@@ -88,11 +98,11 @@ public class BookController {
             return "redirect:/books";
         }
         model.addAttribute("book",bookFound.get());
-        List<Library> libraries = libraryRepository.findAll();
+        List<Library> libraries = libraryRepositoryProxy.findAll();
         model.addAttribute("libraries", libraries);
-        List<Author> authors = authorRepository.findAll();
+        List<Author> authors = authorRepositoryProxy.findAll();
         model.addAttribute("authors", authors);
-        List<Book> books = bookRepository.findAll();
+        List<Book> books = bookRepositoryProxy.findAll();
         model.addAttribute("books", books);
         return "edit_book";
     }
