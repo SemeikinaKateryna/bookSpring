@@ -4,7 +4,7 @@ import com.example.bookspring.dao.interfaces.IAuthorDao;
 import com.example.bookspring.entity.Author;
 import com.example.bookspring.mysql.DatabaseConnection;
 import com.example.bookspring.mysql.queries.MySQLQuery;
-import com.example.bookspring.mysql.queries.ResultSetExtractor;
+import com.example.bookspring.mysql.resultextractor.ResultSetExtractor;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

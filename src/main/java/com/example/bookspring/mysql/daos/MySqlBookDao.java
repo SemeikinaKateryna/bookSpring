@@ -5,7 +5,7 @@ import com.example.bookspring.entity.Author;
 import com.example.bookspring.entity.Book;
 import com.example.bookspring.mysql.DatabaseConnection;
 import com.example.bookspring.mysql.queries.MySQLQuery;
-import com.example.bookspring.mysql.queries.ResultSetExtractor;
+import com.example.bookspring.mysql.resultextractor.ResultSetExtractor;
 import com.example.bookspring.observer.Observer;
 import org.springframework.stereotype.Repository;
 

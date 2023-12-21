@@ -1,4 +1,4 @@
-package com.example.bookspring.mysql.queries;
+package com.example.bookspring.mysql.resultextractor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

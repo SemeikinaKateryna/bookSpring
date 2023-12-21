@@ -3,6 +3,7 @@ package com.example.bookspring.controller;
 import com.example.bookspring.dao.interfaces.IAuthorDao;
 import com.example.bookspring.entity.Author;
 import com.example.bookspring.memento.Caretaker;
+import com.example.bookspring.mongodb.daos.MongoDbAuthorDao;
 import com.example.bookspring.mysql.daos.MySqlAuthorDao;
 import com.example.bookspring.observer.display.LoggingDisplayAuthor;
 import com.example.bookspring.observer.Observer;
@@ -23,7 +24,7 @@ public class AuthorController {
     boolean flag = false;
 
     public AuthorController() {
-        this.authorRepository = new MySqlAuthorDao();
+        this.authorRepository = new MongoDbAuthorDao();
         this.observer = new LoggingDisplayAuthor();
         this.authorRepository.registerObserver(observer);
         this.caretaker = new Caretaker();

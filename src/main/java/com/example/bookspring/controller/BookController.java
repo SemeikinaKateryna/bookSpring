@@ -27,29 +27,24 @@ public class BookController {
     ILibraryDao libraryRepository;
     IAuthorDao authorRepository;
     Observer<Book> observer;
-    FindAll<Book> bookRepositoryProxy;
-    FindAll<Author> authorRepositoryProxy;
-    FindAll<Library> libraryRepositoryProxy;
 
     public BookController() {
         fabric = DaoFactory.getDAOInstance(TypeDao.MY_SQL);
         bookRepository = fabric.createBook();
         libraryRepository = fabric.createLibrary();
         authorRepository = fabric.createAuthor();
+
         observer = new LoggingDisplayBook();
         bookRepository.registerObserver(observer);
-        bookRepositoryProxy = new BookDaoProxy();
-        authorRepositoryProxy = new AuthorDaoProxy();
-        libraryRepositoryProxy = new LibraryDaoProxy();
     }
 
     @GetMapping("/books")
     public String books(Model model){
-        List<Book> allBooks = bookRepositoryProxy.findAll();
+        List<Book> allBooks = bookRepository.findAll();
         model.addAttribute("books",allBooks);
-        List<Author> authors = authorRepositoryProxy.findAll();
+        List<Author> authors = authorRepository.findAll();
         model.addAttribute("authors", authors);
-        List<Library> libraries = libraryRepositoryProxy.findAll();
+        List<Library> libraries = libraryRepository.findAll();
         model.addAttribute("libraries", libraries);
         return "books";
     }
@@ -92,17 +87,17 @@ public class BookController {
     }
 
     @GetMapping("/edit_book")
-    public String editBook(@RequestParam int id, Model model){
+    public String editBook(@RequestParam(required = false) int id, Model model){
         Optional<Book> bookFound = Optional.ofNullable(bookRepository.findById(id));
         if(bookFound.isEmpty()){
             return "redirect:/books";
         }
         model.addAttribute("book",bookFound.get());
-        List<Library> libraries = libraryRepositoryProxy.findAll();
+        List<Library> libraries = libraryRepository.findAll();
         model.addAttribute("libraries", libraries);
-        List<Author> authors = authorRepositoryProxy.findAll();
+        List<Author> authors = authorRepository.findAll();
         model.addAttribute("authors", authors);
-        List<Book> books = bookRepositoryProxy.findAll();
+        List<Book> books = bookRepository.findAll();
         model.addAttribute("books", books);
         return "edit_book";
     }

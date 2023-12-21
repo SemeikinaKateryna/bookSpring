@@ -3,6 +3,7 @@ package com.example.bookspring.controller;
 import com.example.bookspring.dao.interfaces.ILibraryDao;
 import com.example.bookspring.entity.Author;
 import com.example.bookspring.entity.Library;
+import com.example.bookspring.mongodb.daos.MongoDbLibraryDao;
 import com.example.bookspring.mysql.daos.MySqlAuthorDao;
 import com.example.bookspring.mysql.daos.MySqlLibraryDao;
 import com.example.bookspring.observer.Observer;
@@ -20,7 +21,7 @@ public class LibraryController {
     ILibraryDao libraryRepository;
 
     public LibraryController() {
-        this.libraryRepository = new MySqlLibraryDao();
+        this.libraryRepository = new MongoDbLibraryDao();
     }
 
     @GetMapping("/libraries")

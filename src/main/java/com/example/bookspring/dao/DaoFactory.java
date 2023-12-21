@@ -18,6 +18,9 @@ public class DaoFactory {
                         case MY_SQL:
                             instance = new MySqlFabric();
                             break;
+                        case MONGO_DB:
+                            instance = new MongoDBFabric();
+                            break;
                         default:
                             throw new IllegalArgumentException("Unsupported DAO type: " + type);
                     }
