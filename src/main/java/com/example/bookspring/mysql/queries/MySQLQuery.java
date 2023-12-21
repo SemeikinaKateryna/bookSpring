@@ -2,6 +2,9 @@ package com.example.bookspring.mysql.queries;
 
 public abstract class MySQLQuery {
 
+    public static final String FOREIGN_KEY_SET_NULL = "SET FOREIGN_KEY_CHECKS = 0";
+    public static final String FOREIGN_KEY_SET_ONE = "SET FOREIGN_KEY_CHECKS = 1";
+
     public static class BookRequestsSQL{
         public static final String FIND_BY_ID_BOOK = "SELECT * FROM Book WHERE id = ?";
         public static final String SELECT_ALL_BOOK = "SELECT * FROM Book";
@@ -12,6 +15,8 @@ public abstract class MySQLQuery {
         public static final String DELETE_BOOK = "DELETE FROM Book WHERE id = ?";
         public static final String FIND_BOOKS_BY_TITLE = "SELECT * FROM Book WHERE title LIKE ?";
         public static final String FIND_LAST = "SELECT * FROM Book ORDER BY id DESC LIMIT 1";
+
+        public static final String DELETE_FROM_BOOK= "DELETE FROM Book";
     }
 
     public static class LibraryRequestsSQL {
@@ -20,6 +25,7 @@ public abstract class MySQLQuery {
 
         public static final String INSERT_LIBRARY = "INSERT INTO Library (address) VALUES (?)";
         public static final String DELETE_LIBRARY = "DELETE FROM Library WHERE id = ?";
+        public static final String DELETE_FROM_LIBRARY = "DELETE FROM Library";
     }
 
     public static class AuthorRequestsSQL {
@@ -32,6 +38,7 @@ public abstract class MySQLQuery {
         public static final String INSERT_AUTHOR = "INSERT INTO Author (full_name, country) " +
                 "VALUES (?, ?)";
         public static final String DELETE_AUTHOR = "DELETE FROM Author WHERE id = ?";
+        public static final String DELETE_FROM_AUTHOR = "DELETE FROM Author";
 
     }
 
@@ -39,5 +46,6 @@ public abstract class MySQLQuery {
         public static final String INSERT_BOOK_AUTHOR = "INSERT INTO Book_Author (book_id, author_id) " +
                 "VALUES (?, ?) ";
         public static final String DELETE_BY_BOOK_AUTHOR_ID = "DELETE FROM Book_Author WHERE book_id = ? AND author_id = ?";
+        public static final String DELETE_FROM_BOOK_AUTHOR = "DELETE FROM Book_Author";
     }
 }

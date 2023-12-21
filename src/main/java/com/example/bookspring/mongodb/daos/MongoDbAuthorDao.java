@@ -17,11 +17,14 @@ public class MongoDbAuthorDao implements IAuthorDao, DocumentExtractor<Author> {
     private Author author;
     private final List<Observer<Author>> observers = new ArrayList<>();
     private final MongoCollection<Document> authorCollection;
+    private final MongoCollection<Document> bookAuthorCollection;
+
 
     public MongoDbAuthorDao() {
         var mongoClient = MongoClients.create();
         var database = mongoClient.getDatabase("books");
         this.authorCollection = database.getCollection("author");
+        this.bookAuthorCollection = database.getCollection("book_author");
     }
 
     @Override
@@ -82,17 +85,17 @@ public class MongoDbAuthorDao implements IAuthorDao, DocumentExtractor<Author> {
 
     @Override
     public boolean deleteAuthorFromBook(int bookId, int authorId) {
-        var query = Filters.and(Filters.eq("bookId", bookId), Filters.eq("id", authorId));
-        authorCollection.deleteOne(query);
+        var query = Filters.and(Filters.eq("bookId", bookId),
+                Filters.eq("authorId", authorId));
+        bookAuthorCollection.deleteOne(query);
         return true;
     }
 
     @Override
     public boolean addAuthorToBook(int bookId, int authorId) {
-        var document = new Document("id", authorId)
+        var document = new Document("authorId", authorId)
                 .append("bookId", bookId);
-
-        authorCollection.insertOne(document);
+        bookAuthorCollection.insertOne(document);
         return true;
     }
 
