@@ -4,9 +4,7 @@ import com.example.bookspring.dao.interfaces.IAuthorDao;
 import com.example.bookspring.entity.Author;
 import com.example.bookspring.mongodb.docextractor.DocumentExtractor;
 import com.example.bookspring.observer.Observer;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
+import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
 
@@ -141,4 +139,44 @@ public class MongoDbAuthorDao implements IAuthorDao, DocumentExtractor<Author> {
             observer.delete(author);
         }
     }
+
+    public Integer countAuthorsByName(String name) {
+        return (int) authorCollection.countDocuments(Filters.regex("full_name", "^" + name));
+    }
+
+    public List<Document> countAuthorsByCountry() {
+
+        // Отримати унікальні країни
+        DistinctIterable<String> distinctCountries = authorCollection.distinct("country", String.class);
+        List<String> uniqueCountries = new ArrayList<>();
+        distinctCountries.into(uniqueCountries);
+
+        // Підрахунок кількості авторів для кожної унікальної країни
+        List<Document> result = new ArrayList<>();
+        for (String country : uniqueCountries) {
+            long authorCount = authorCollection.countDocuments(new Document("country", country));
+            Document document = new Document("country", country)
+                    .append("authorCount", authorCount);
+            result.add(document);
+        }
+
+        return result;
+    }
+
+    public List<Document> printAuthorsByCountryAndNameStartWith(String country) {
+        // Отримати всіх авторів, які мають країну та ім'я, що починається з "John"
+        FindIterable<Document> findResult = authorCollection.find(
+                Filters.and(
+                        Filters.eq("country", country),
+                        Filters.regex("full_name", "^John")
+                )
+        );
+
+        // Отримати результат в список
+        List<Document> result = new ArrayList<>();
+        findResult.into(result);
+
+        return result;
+    }
+
 }

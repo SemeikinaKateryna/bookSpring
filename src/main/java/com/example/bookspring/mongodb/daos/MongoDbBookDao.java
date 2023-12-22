@@ -6,14 +6,16 @@ import com.example.bookspring.entity.Library;
 import com.example.bookspring.mongodb.docextractor.DocumentExtractor;
 
 import com.example.bookspring.observer.Observer;
-import com.mongodb.client.MongoCursor;
+import com.mongodb.client.*;
+import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Projections;
 import org.bson.Document;
 
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -144,5 +146,28 @@ public class MongoDbBookDao implements IBookDao, DocumentExtractor<Book> {
         for (Observer<Book> observer : this.observers) {
             observer.delete(book);
         }
+    }
+
+    public long countBooksByYear(int year) {
+        return bookCollection.countDocuments(Filters.eq("year", year));
+    }
+
+    public List<Document> getBooksContainingLetterT() {
+        FindIterable<Document> result = bookCollection.find(Filters.regex("title", "T", "i")) // "i" - ігнорує регістр
+                .projection(Projections.fields(
+                        Projections.include("title"),
+                        Projections.include("pages"),
+                        Projections.include("year"),
+                        Projections.excludeId()
+                ));
+
+        return toList(result);
+    }
+
+    // Допоміжний метод для перетворення FindIterable в List<Document>
+    private List<Document> toList(FindIterable<Document> iterable) {
+        List<Document> result = new ArrayList<>();
+        iterable.forEach(result::add);
+        return result;
     }
 }
